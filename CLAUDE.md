@@ -4,7 +4,7 @@ A CLI tool for CS undergrads to aggregate SWE internships from public GitHub lis
 
 ## Status
 
-Fresh `uv init` scaffold. `src/internship_finder/__init__.py` contains only a `main()` stub. No domain code, tests, or features yet. Build from scratch.
+Phase 1 in progress. Two data sources (vanshb03/Summer2027-Internships, SimplifyJobs/Summer2026-Internships) are wired up; `main()` fetches both and prints per-source counts plus a combined visible+active total. No filtering, deduplication, rendering, or tests yet.
 
 ## Project Goals
 
@@ -44,10 +44,12 @@ uv run ruff format              # format
 
 ### Phase 1: JSON sources (clean schema, identical format)
 
-- **SimplifyJobs/Summer2026-Internships** (44k+ stars, gold standard)
+We're in May 2026 — Summer 2026 recruiting has effectively closed, and Summer 2027 is the next live cycle (applications open ~July 2026).
+
+- **vanshb03/Summer2027-Internships** — primary cycle.
+  - JSON: https://raw.githubusercontent.com/vanshb03/Summer2027-Internships/dev/.github/scripts/listings.json
+- **SimplifyJobs/Summer2026-Internships** — kept for off-season coverage (late Summer 2026 stragglers, Fall 2026 / Spring 2027 internships posted alongside summer ones).
   - JSON: https://raw.githubusercontent.com/SimplifyJobs/Summer2026-Internships/dev/.github/scripts/listings.json
-- **vanshb03/Summer2026-Internships** (7k+ stars, parallel list, identical schema)
-  - JSON: https://raw.githubusercontent.com/vanshb03/Summer2026-Internships/dev/.github/scripts/listings.json
 
 Both repos commit to `dev`, not `main`. The `main` branch is stale by design.
 
@@ -58,6 +60,8 @@ Filtering rules:
 - `active: false` -> keep, tag as `[CLOSED]`
 
 Deduplication: match by `id`, fallback to `(company_name, title, url)`.
+
+**Cycle-awareness (Phase 1.5)**: cycles roll over each year — by mid-2027 we'll want a Summer 2028 source, and Summer 2026 will be fully obsolete. The repository layer should make swapping/retiring sources cheap (no caller edits beyond registration), and listings will likely need a `cycle` tag once we're juggling 3+ overlapping cycles.
 
 ### Phase 2: Markdown sources (parsing required)
 
