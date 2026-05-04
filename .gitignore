@@ -22,3 +22,9 @@ Thumbs.db
 # Env files (never commit secrets)
 .env
 .env.local
+
+# Personal profile (gitignored — see profile.example.txt)
+profile.txt
+
+# Local AI score cache
+.cache/

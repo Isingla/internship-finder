@@ -6,13 +6,19 @@ from rich.console import Console
 from rich.table import Table
 
 
-def render_table(listings: list[dict]) -> None:
-    """Print a rich table of listings. Caller must guard against empty input."""
+def render_table(listings: list[dict], show_scores: bool = False) -> None:
+    """Print a rich table of listings. Caller must guard against empty input.
+
+    When show_scores is True, insert Score and Reason columns between Posted and Source.
+    """
     table = Table(title=f"Internships ({len(listings)} matched)")
     table.add_column("Company", style="bold")
     table.add_column("Title")
     table.add_column("Location")
     table.add_column("Posted")
+    if show_scores:
+        table.add_column("Score")
+        table.add_column("Reason", overflow="fold")
     table.add_column("Source")
     table.add_column("Apply")
 
@@ -27,7 +33,14 @@ def render_table(listings: list[dict]) -> None:
         source = item.get("_source") or "—"
         url = item.get("url") or ""
         apply_cell = f"[link={url}]Apply[/link]" if url else "—"
-        table.add_row(company, title, location, posted, source, apply_cell)
+        if show_scores:
+            score_cell = f"[bold]{item.get('_score', 0)}[/bold]"
+            reason_cell = item.get("_score_reason") or "—"
+            table.add_row(
+                company, title, location, posted, score_cell, reason_cell, source, apply_cell
+            )
+        else:
+            table.add_row(company, title, location, posted, source, apply_cell)
 
     Console().print(table)
 
