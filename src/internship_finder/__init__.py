@@ -4,9 +4,10 @@ import truststore
 truststore.inject_into_ssl()
 
 import typer  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
 
 from internship_finder import filter as filter_module  # noqa: E402
-from internship_finder import render  # noqa: E402
+from internship_finder import render, score  # noqa: E402
 from internship_finder.sources import simplifyjobs, vansh_summer2027  # noqa: E402
 
 app = typer.Typer(add_completion=False, no_args_is_help=False)
@@ -18,6 +19,9 @@ def run(
     location: str | None = typer.Option(None, "--location", "-l", help="Filter by location."),
     company: str | None = typer.Option(None, "--company", "-c", help="Filter by company name."),
     limit: int = typer.Option(50, "--limit", help="Max listings to display."),
+    score_listings: bool = typer.Option(
+        False, "--score", help="Score listings against profile.txt with Claude Haiku."
+    ),
 ) -> None:
     """Fetch internships from configured sources, apply filters, render as a table."""
     simplify_listings = simplifyjobs.fetch_listings()
@@ -56,8 +60,15 @@ def run(
             print("No listings available")
         return
 
-    render.render_table(filtered)
+    if score_listings:
+        profile = score.load_profile()
+        score.score_listings(filtered, profile)
+        filtered.sort(key=lambda item: item.get("_score") or 0, reverse=True)
+
+    render.render_table(filtered, show_scores=score_listings)
 
 
 def main() -> None:
+    # Load .env so ANTHROPIC_API_KEY is picked up by the anthropic SDK.
+    load_dotenv()
     app()

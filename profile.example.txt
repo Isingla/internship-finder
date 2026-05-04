@@ -1,0 +1,7 @@
+# Edit this file with your skills, interests, and what you're looking for.
+# Save as profile.txt (gitignored). Claude scores listings against this.
+
+I'm a [year] CS undergrad at [University]. Strong in [languages/areas].
+Looking for [type of role] at [company size/stage], ideally in [locations].
+Especially interested in [topics like ML infra, distributed systems, compilers, etc.].
+Not interested in [exclusions like sales engineering, on-site-only, etc.].
