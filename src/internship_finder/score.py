@@ -108,9 +108,15 @@ Listing:
 - Title: {title}
 - Locations: {locations_str}
 
-Rate this listing 0-100 for fit (100 = perfect match for the candidate's skills and interests).
+Rate this listing 0-100 for fit. Use the full range:
+- 85-100: excellent fit, strongly aligned with profile
+- 65-84: strong fit, most criteria match
+- 40-64: decent fit, some alignment with caveats
+- 20-39: weak fit, significant misalignments
+- 0-19: poor fit, mostly misaligned
+
 Respond with valid JSON only, no markdown, no preamble:
-{{"score": <int 0-100>, "reason": "<one short sentence>"}}
+{{"score": <int 0-100>, "reason": "<max 15 words explaining the score>"}}
 """
 
 

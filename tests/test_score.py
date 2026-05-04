@@ -39,6 +39,11 @@ def test_build_prompt_includes_profile_title_company():
     assert "ML Intern" in prompt
     assert "Stripe" in prompt
     assert "NYC" in prompt
+    # rubric and word cap are part of the calibrated prompt; assert presence
+    # without locking exact wording
+    assert "0-100" in prompt
+    assert "85-100" in prompt
+    assert "15 words" in prompt
 
 
 def test_call_anthropic_returns_zero_on_parse_failure():
