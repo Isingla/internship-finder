@@ -1,4 +1,7 @@
-"""SimplifyJobs/Summer2026-Internships data source — covers Summer 2026 (closing) plus Fall 2026 / Spring 2027 off-season listings."""
+"""SimplifyJobs/Summer2026-Internships data source.
+
+Covers Summer 2026 (closing) plus Fall 2026 / Spring 2027 off-season listings.
+"""
 
 import httpx
 

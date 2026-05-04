@@ -1,4 +1,7 @@
-"""vanshb03/Summer2027-Internships data source — primary cycle (applications open ~July 2026)."""
+"""vanshb03/Summer2027-Internships data source.
+
+Primary cycle (applications open ~July 2026).
+"""
 
 import httpx
 
