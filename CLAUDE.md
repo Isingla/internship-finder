@@ -4,7 +4,7 @@ A CLI tool for CS undergrads to aggregate SWE internships from public GitHub lis
 
 ## Status
 
-Phase 1 in progress. Two data sources (vanshb03/Summer2027-Internships, SimplifyJobs/Summer2026-Internships) are wired up; `main()` fetches both and prints per-source counts plus a combined visible+active total. No filtering, deduplication, rendering, or tests yet.
+Phase 1 done. Both sources fetched and merged, filtered (keyword/location/company), rendered as a rich table, top 50 by date posted. First tests cover the filter module.
 
 ## Project Goals
 
@@ -39,6 +39,7 @@ uv run ruff format              # format
 - User creates feature branches for non-trivial work (e.g. `feat/fetch-simplify`, `feat/dedup-listings`). Claude Code commits to whatever branch is currently checked out and does not switch branches on its own.
 - Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`.
 - Each commit should leave the project in a working state.
+- Do NOT add `Co-Authored-By: Claude` (or any AI co-author trailer) to commit messages. This project is the user's portfolio; AI tool use is acknowledged in CLAUDE.md and the README, but commits are attributed to the user only.
 
 ## Data Sources
 
