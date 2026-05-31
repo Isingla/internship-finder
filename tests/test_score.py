@@ -94,9 +94,7 @@ def test_score_listings_uses_cache_and_skips_api(monkeypatch, tmp_path):
     listing = {"id": "L1", "title": "ML Intern", "company_name": "Stripe"}
     profile = "Test profile."
     key = score._cache_key(listing, profile)
-    cache_file.write_text(
-        json.dumps({key: {"score": 87, "reason": "good fit"}}), encoding="utf-8"
-    )
+    cache_file.write_text(json.dumps({key: {"score": 87, "reason": "good fit"}}), encoding="utf-8")
 
     def boom(*_args, **_kwargs):
         raise AssertionError("anthropic client must not be constructed on a full cache hit")

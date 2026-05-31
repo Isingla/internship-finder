@@ -13,9 +13,7 @@ def test_keyword_filter_matches_title_case_insensitive():
         "ML Engineer Intern"
     ]
     # "Backend SWE" doesn't contain "engineer"; the other two do.
-    engineer_titles = sorted(
-        item["title"] for item in apply_filters(listings, keyword="ENGINEER")
-    )
+    engineer_titles = sorted(item["title"] for item in apply_filters(listings, keyword="ENGINEER"))
     assert engineer_titles == ["ML Engineer Intern", "Software Engineer"]
 
 
