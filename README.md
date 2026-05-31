@@ -1,5 +1,7 @@
 # internship-finder
 
+[![CI](https://github.com/Isingla/internship-finder/actions/workflows/ci.yml/badge.svg)](https://github.com/Isingla/internship-finder/actions/workflows/ci.yml)
+
 A command-line tool that aggregates SWE and ML internship listings from public, GitHub-maintained lists, filters them, and optionally AI-scores each one against a personal profile so the best-fit roles float to the top. Built for CS undergrads who'd rather run one command than click through five different repos. This is a personal learning project, not a polished product.
 
 ## Setup
