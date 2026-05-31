@@ -49,7 +49,7 @@ We're in May 2026 — Summer 2026 recruiting has effectively closed, and Summer 
 
 - **vanshb03/Summer2027-Internships** — primary cycle.
   - JSON: https://raw.githubusercontent.com/vanshb03/Summer2027-Internships/dev/.github/scripts/listings.json
-- **SimplifyJobs/Summer2026-Internships** — kept for off-season coverage (late Summer 2026 stragglers, Fall 2026 / Spring 2027 internships posted alongside summer ones).
+- **SimplifyJobs/Summer2026-Internships** — paused (no Summer 2027 repo yet); kept for off-season coverage (late Summer 2026 stragglers, Fall 2026 / Spring 2027 internships posted alongside summer ones).
   - JSON: https://raw.githubusercontent.com/SimplifyJobs/Summer2026-Internships/dev/.github/scripts/listings.json
 
 Both repos commit to `dev`, not `main`. The `main` branch is stale by design.

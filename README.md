@@ -35,7 +35,7 @@ The API key and profile are only needed when you pass `--score`. A plain run fet
 
 ## What works today
 
-- **Two live sources**, merged into one view: [vanshb03/Summer2027-Internships](https://github.com/vanshb03/Summer2027-Internships) (primary cycle) and [SimplifyJobs/Summer2026-Internships](https://github.com/SimplifyJobs/Summer2026-Internships) (off-season coverage). Listings hidden upstream (`is_visible: false`) are dropped.
+- **One live source:** [vanshb03/Summer2027-Internships](https://github.com/vanshb03/Summer2027-Internships) — the current Summer 2027 cycle. (SimplifyJobs is paused until they publish a Summer 2027 repo; see Data sources.) Listings hidden upstream (`is_visible: false`) are dropped.
 - **Filters**, all optional and combinable: `--keyword`/`-k` (matches the title), `--location`/`-l` (matches any of a listing's locations), and `--company`/`-c` (matches the company name). All are case-insensitive substring matches.
 - **Newest-first ordering**, capped by `--limit` (default 50). The cap is applied after filtering, so you get the newest *matching* listings, not the newest overall.
 - **A rich terminal table** with Company, Title, Location, Posted date, Source, and a clickable Apply link.
@@ -75,13 +75,15 @@ Still planned:
 - A Pydantic `Listing` model with basic deduplication.
 - Markdown sources (speedyapply SWE/AI college-job lists).
 - CSV / markdown export.
+- Re-add SimplifyJobs as a source once they publish a Summer 2027 repo.
+- Track down Summer 2027 equivalents of the planned speedyapply / zapply lists (their current repos are 2026-labeled).
 
 ## Data sources
 
 This tool aggregates publicly maintained internship lists. Credit and thanks to the maintainers — they do the hard work of keeping these current.
 
 - [vanshb03/Summer2027-Internships](https://github.com/vanshb03/Summer2027-Internships) — live
-- [SimplifyJobs/Summer2026-Internships](https://github.com/SimplifyJobs/Summer2026-Internships) — live
+- [SimplifyJobs/Summer2026-Internships](https://github.com/SimplifyJobs/Summer2026-Internships) — paused (no Summer 2027 repo yet)
 - [speedyapply/2026-SWE-College-Jobs](https://github.com/speedyapply/2026-SWE-College-Jobs) *(planned)*
 - [speedyapply/2026-AI-College-Jobs](https://github.com/speedyapply/2026-AI-College-Jobs) *(planned)*
 - [zapplyjobs/underclassmen-internships](https://github.com/zapplyjobs/underclassmen-internships) *(planned)*
