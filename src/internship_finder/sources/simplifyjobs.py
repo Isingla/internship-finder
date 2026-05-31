@@ -8,12 +8,14 @@ Re-add to the merge in internship_finder/__init__.py when their 2027 repo launch
 
 import httpx
 
+from internship_finder.models import Listing
+
 LISTINGS_URL = "https://raw.githubusercontent.com/SimplifyJobs/Summer2026-Internships/dev/.github/scripts/listings.json"
 
 
-def fetch_listings() -> list[dict]:
-    """Fetch the SimplifyJobs Summer 2026 internships JSON and return it as a list of dicts."""
+def fetch_listings() -> list[Listing]:
+    """Fetch the SimplifyJobs Summer 2026 internships JSON and return it as a list of Listings."""
     with httpx.Client(timeout=10.0) as client:
         response = client.get(LISTINGS_URL)
         response.raise_for_status()
-        return response.json()
+        return [Listing(**row, source_repo="simplifyjobs") for row in response.json()]

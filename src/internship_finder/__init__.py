@@ -6,6 +6,7 @@ truststore.inject_into_ssl()
 import typer  # noqa: E402
 from dotenv import load_dotenv  # noqa: E402
 
+from internship_finder import dedup as dedup_module  # noqa: E402
 from internship_finder import filter as filter_module  # noqa: E402
 from internship_finder import render, score  # noqa: E402
 from internship_finder.sources import vansh_summer2027  # noqa: E402
@@ -25,15 +26,15 @@ def run(
 ) -> None:
     """Fetch internships from configured sources, apply filters, render as a table."""
     vansh_listings = vansh_summer2027.fetch_listings()
-    for item in vansh_listings:
-        item["_source"] = "vansh_summer2027"
 
     # SimplifyJobs is paused: their org only has Summer2026 (closing cycle) — no
     # Summer2027 repo exists yet. Re-add simplifyjobs to the merge when it launches.
-    merged = [item for item in vansh_listings if item.get("is_visible") is not False]
+    merged = [item for item in vansh_listings if item.is_visible is not False]
+
+    deduped = dedup_module.dedup(merged)
 
     filtered = filter_module.apply_filters(
-        merged,
+        deduped,
         keyword=keyword,
         location=location,
         company=company,
@@ -57,7 +58,7 @@ def run(
     if score_listings:
         profile = score.load_profile()
         score.score_listings(filtered, profile)
-        filtered.sort(key=lambda item: item.get("_score") or 0, reverse=True)
+        filtered.sort(key=lambda item: item.score or 0, reverse=True)
 
     render.render_table(filtered, show_scores=score_listings)
 

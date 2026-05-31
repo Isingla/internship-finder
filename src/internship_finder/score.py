@@ -16,6 +16,8 @@ from rich.progress import (
     TextColumn,
 )
 
+from internship_finder.models import Listing
+
 MODEL = "claude-haiku-4-5-20251001"
 CACHE_DIR = Path(".cache")
 CACHE_FILE = CACHE_DIR / "scores.json"
@@ -31,7 +33,7 @@ def load_profile() -> str:
     return PROFILE_PATH.read_text(encoding="utf-8").strip()
 
 
-def score_listings(listings: list[dict], profile: str) -> list[dict]:
+def score_listings(listings: list[Listing], profile: str) -> list[Listing]:
     """Add _score (int 0-100) and _score_reason (str) to each listing.
 
     Reads cache, makes API calls only on cache miss, writes cache once at the end.
@@ -51,14 +53,14 @@ def score_listings(listings: list[dict], profile: str) -> list[dict]:
             key = _cache_key(listing, profile)
             if key in cache:
                 cached = cache[key]
-                listing["_score"] = cached["score"]
-                listing["_score_reason"] = cached["reason"]
+                listing.score = cached["score"]
+                listing.score_reason = cached["reason"]
             else:
                 if client is None:
                     client = anthropic.Anthropic()
                 result = _call_anthropic(client, listing, profile)
-                listing["_score"] = result["score"]
-                listing["_score_reason"] = result["reason"]
+                listing.score = result["score"]
+                listing.score_reason = result["reason"]
                 cache[key] = result
             progress.advance(task)
 
@@ -66,11 +68,11 @@ def score_listings(listings: list[dict], profile: str) -> list[dict]:
     return listings
 
 
-def _cache_key(listing: dict, profile: str) -> str:
+def _cache_key(listing: Listing, profile: str) -> str:
     """SHA-256 hex of (id || title+company fallback, title, company_name, profile)."""
-    listing_id = listing.get("id")
-    title = listing.get("title") or ""
-    company = listing.get("company_name") or ""
+    listing_id = listing.id
+    title = listing.title or ""
+    company = listing.company_name or ""
     identity = str(listing_id) if listing_id is not None else f"{title}|{company}"
     payload = "\x1f".join([identity, title, company, profile])
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
@@ -92,11 +94,11 @@ def _save_cache(cache: dict[str, dict]) -> None:
     CACHE_FILE.write_text(json.dumps(cache, indent=2), encoding="utf-8")
 
 
-def _build_prompt(listing: dict, profile: str) -> str:
+def _build_prompt(listing: Listing, profile: str) -> str:
     """Build the user prompt string for one listing."""
-    company = listing.get("company_name") or "unspecified"
-    title = listing.get("title") or "unspecified"
-    locations = listing.get("locations") or []
+    company = listing.company_name or "unspecified"
+    title = listing.title or "unspecified"
+    locations = listing.locations
     locations_str = ", ".join(locations) or "unspecified"
     return f"""You are scoring an internship listing for a candidate.
 
@@ -120,7 +122,7 @@ Respond with valid JSON only, no markdown, no preamble:
 """
 
 
-def _call_anthropic(client, listing: dict, profile: str) -> dict:
+def _call_anthropic(client, listing: Listing, profile: str) -> dict:
     """One API call. Returns {"score": int, "reason": str}.
 
     On parse failure or any exception: return {"score": 0, "reason": "scoring failed"}.
