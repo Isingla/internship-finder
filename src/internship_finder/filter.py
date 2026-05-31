@@ -1,13 +1,15 @@
 """Pure-function filters for internship listings. No I/O, no side effects — easily testable."""
 
+from internship_finder.models import Listing
+
 
 def apply_filters(
-    listings: list[dict],
+    listings: list[Listing],
     keyword: str | None = None,
     location: str | None = None,
     company: str | None = None,
     limit: int | None = None,
-) -> list[dict]:
+) -> list[Listing]:
     """Apply optional keyword/location/company filters, sort newest first, then cap at limit.
 
     Order: keyword → location → company → sort → limit. Limit runs last so callers asking
@@ -17,26 +19,20 @@ def apply_filters(
 
     if keyword is not None:
         needle = keyword.lower()
-        result = [item for item in result if needle in (item.get("title") or "").lower()]
+        result = [item for item in result if needle in (item.title or "").lower()]
 
     if location is not None:
         needle = location.lower()
-        result = [
-            item
-            for item in result
-            if any(needle in loc.lower() for loc in (item.get("locations") or []))
-        ]
+        result = [item for item in result if any(needle in loc.lower() for loc in item.locations)]
 
     if company is not None:
         needle = company.lower()
         result = [
-            item
-            for item in result
-            if item.get("company_name") and needle in item["company_name"].lower()
+            item for item in result if item.company_name and needle in item.company_name.lower()
         ]
 
     # Sort newest first; missing/zero date_posted sorts last.
-    result = sorted(result, key=lambda item: item.get("date_posted") or 0, reverse=True)
+    result = sorted(result, key=lambda item: item.date_posted or 0, reverse=True)
 
     if limit is not None:
         result = result[:limit]

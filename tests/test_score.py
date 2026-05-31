@@ -1,11 +1,12 @@
 import json
 
 from internship_finder import score
+from internship_finder.models import Listing
 
 
 def test_cache_key_stable_for_same_input():
     """Same listing + profile → same cache key on repeated calls."""
-    listing = {"id": "abc123", "title": "ML Intern", "company_name": "Stripe"}
+    listing = Listing(id="abc123", title="ML Intern", company_name="Stripe")
     profile = "I like ML."
 
     assert score._cache_key(listing, profile) == score._cache_key(listing, profile)
@@ -13,7 +14,7 @@ def test_cache_key_stable_for_same_input():
 
 def test_cache_key_changes_when_profile_changes():
     """Editing the profile invalidates the cache so listings get re-scored."""
-    listing = {"id": "abc123", "title": "ML Intern", "company_name": "Stripe"}
+    listing = Listing(id="abc123", title="ML Intern", company_name="Stripe")
 
     a = score._cache_key(listing, "I like ML.")
     b = score._cache_key(listing, "I like distributed systems.")
@@ -22,8 +23,8 @@ def test_cache_key_changes_when_profile_changes():
 
 def test_cache_key_falls_back_to_title_company_when_id_missing():
     """Listings without an id still get a stable key from (title, company)."""
-    no_id = {"title": "ML Intern", "company_name": "Stripe"}
-    other = {"title": "Backend Intern", "company_name": "Stripe"}
+    no_id = Listing(title="ML Intern", company_name="Stripe")
+    other = Listing(title="Backend Intern", company_name="Stripe")
 
     assert score._cache_key(no_id, "p") == score._cache_key(no_id, "p")
     assert score._cache_key(no_id, "p") != score._cache_key(other, "p")
@@ -31,7 +32,7 @@ def test_cache_key_falls_back_to_title_company_when_id_missing():
 
 def test_build_prompt_includes_profile_title_company():
     """The prompt must surface the candidate profile and key listing fields."""
-    listing = {"title": "ML Intern", "company_name": "Stripe", "locations": ["NYC", "Remote"]}
+    listing = Listing(title="ML Intern", company_name="Stripe", locations=["NYC", "Remote"])
     profile = "MAGIC_PROFILE_MARKER undergrad."
 
     prompt = score._build_prompt(listing, profile)
@@ -61,7 +62,7 @@ def test_call_anthropic_returns_zero_on_parse_failure():
             def create(**_kwargs):
                 return FakeResponse()
 
-    result = score._call_anthropic(FakeClient(), {"title": "x", "company_name": "y"}, "p")
+    result = score._call_anthropic(FakeClient(), Listing(title="x", company_name="y"), "p")
     assert result == {"score": 0, "reason": "scoring failed"}
 
 
@@ -80,7 +81,7 @@ def test_call_anthropic_clamps_score_to_0_100():
             def create(**_kwargs):
                 return FakeResponse()
 
-    result = score._call_anthropic(FakeClient(), {"title": "x", "company_name": "y"}, "p")
+    result = score._call_anthropic(FakeClient(), Listing(title="x", company_name="y"), "p")
     assert result["score"] == 100
     assert result["reason"] == "great"
 
@@ -91,7 +92,7 @@ def test_score_listings_uses_cache_and_skips_api(monkeypatch, tmp_path):
     monkeypatch.setattr(score, "CACHE_DIR", tmp_path)
     monkeypatch.setattr(score, "CACHE_FILE", cache_file)
 
-    listing = {"id": "L1", "title": "ML Intern", "company_name": "Stripe"}
+    listing = Listing(id="L1", title="ML Intern", company_name="Stripe")
     profile = "Test profile."
     key = score._cache_key(listing, profile)
     cache_file.write_text(json.dumps({key: {"score": 87, "reason": "good fit"}}), encoding="utf-8")
@@ -102,5 +103,5 @@ def test_score_listings_uses_cache_and_skips_api(monkeypatch, tmp_path):
     monkeypatch.setattr(score.anthropic, "Anthropic", boom)
 
     result = score.score_listings([listing], profile)
-    assert result[0]["_score"] == 87
-    assert result[0]["_score_reason"] == "good fit"
+    assert result[0].score == 87
+    assert result[0].score_reason == "good fit"

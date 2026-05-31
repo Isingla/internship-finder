@@ -5,8 +5,10 @@ from datetime import UTC, datetime
 from rich.console import Console
 from rich.table import Table
 
+from internship_finder.models import Listing
 
-def render_table(listings: list[dict], show_scores: bool = False) -> None:
+
+def render_table(listings: list[Listing], show_scores: bool = False) -> None:
     """Print a rich table of listings. Caller must guard against empty input.
 
     When show_scores is True, insert Score and Reason columns between Posted and Source.
@@ -23,19 +25,19 @@ def render_table(listings: list[dict], show_scores: bool = False) -> None:
     table.add_column("Apply")
 
     for item in listings:
-        company = item.get("company_name") or "—"
-        title = item.get("title") or "—"
-        location = _format_locations(item.get("locations") or [])
-        posted_ts = item.get("date_posted") or 0
+        company = item.company_name or "—"
+        title = item.title or "—"
+        location = _format_locations(item.locations)
+        posted_ts = item.date_posted or 0
         posted = (
             datetime.fromtimestamp(posted_ts, tz=UTC).strftime("%Y-%m-%d") if posted_ts else "—"
         )
-        source = item.get("_source") or "—"
-        url = item.get("url") or ""
+        source = item.source_repo or "—"
+        url = item.url or ""
         apply_cell = f"[link={url}]Apply[/link]" if url else "—"
         if show_scores:
-            score_cell = f"[bold]{item.get('_score', 0)}[/bold]"
-            reason_cell = item.get("_score_reason") or "—"
+            score_cell = f"[bold]{item.score if item.score is not None else 0}[/bold]"
+            reason_cell = item.score_reason or "—"
             table.add_row(
                 company, title, location, posted, score_cell, reason_cell, source, apply_cell
             )
